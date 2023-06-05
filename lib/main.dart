@@ -1,10 +1,13 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'package:henri_pottier_flutter/screens/book_detail_screen.dart';
 import 'package:henri_pottier_flutter/screens/home_screen.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -12,7 +15,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
-    );
+      initialRoute: '/',
+      routes: {
+        '/': (ctx) => HomeScreen(),
+        BookDetailScreen.routeName: (ctx) => const BookDetailScreen(),
+      },    );
   }
 }

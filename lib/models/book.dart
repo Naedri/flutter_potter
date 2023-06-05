@@ -1,10 +1,9 @@
 // models/book.dart
 class Book {
   final String title;
-  final String author;
-  final String description;
-  final String imageUrl;
+  final String synopsis;
+  final String cover;
   final double price;
 
-  Book(this.title, this.author, this.description, this.imageUrl, this.price);
+  Book(this.title, this.synopsis, this.cover, this.price);
 }
