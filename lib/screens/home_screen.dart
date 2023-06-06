@@ -44,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
                     itemCount: books.length,
                     itemBuilder: (ctx, index) {
                       return ListTile(
-                        leading: Image.network(books[index].cover, scale: 2,),
+                        leading: Image.network(books[index].cover),
                         title: Text(books[index].title),
                         onTap: () {
                           Navigator.pushNamed(
