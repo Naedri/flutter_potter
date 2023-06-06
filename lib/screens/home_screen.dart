@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:henri_pottier_flutter/models/book.dart';
-import 'package:henri_pottier_flutter/models/provider.dart';
 import 'package:henri_pottier_flutter/screens/appbar.dart';
 import 'package:henri_pottier_flutter/screens/book_detail_screen.dart';
 import 'package:http/http.dart' as http;
@@ -26,57 +25,51 @@ final booksProvider = FutureProvider<List<Book>>((ref) async {
   return fetchedBooks;
 });
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final booksAsyncValue = ref.watch(booksProvider);
     return Scaffold(
       appBar: appBar("Henri pottier"),
-      body: Consumer(
-        builder: (context, widgetRef, _) {
-          final booksAsyncValue = widgetRef.watch(booksProvider);
-          final aCart = widgetRef.watch(cartProvider);
-          return Column(
-            children: [
-              Builder(builder: (context) {
-                return booksAsyncValue.when(
-                  data: (books) {
-                    return Column(
-                      children: [
-                        ListView.builder(
-                          itemCount: books.length,
-                          padding: const EdgeInsets.all(10),
-                          shrinkWrap: true,
-                          itemBuilder: (ctx, index) {
-                            return ListTile(
-                              leading: Image.network(books[index].cover),
-                              title: Text(books[index].title),
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  BookDetailScreen.routeName,
-                                  arguments: books[index],
-                                );
-                              },
+      body: Column(
+        children: [
+          Builder(builder: (context) {
+            return booksAsyncValue.when(
+              data: (books) {
+                return Column(
+                  children: [
+                    ListView.builder(
+                      itemCount: books.length,
+                      padding: const EdgeInsets.all(10),
+                      shrinkWrap: true,
+                      itemBuilder: (ctx, index) {
+                        return ListTile(
+                          leading: Image.network(books[index].cover),
+                          title: Text(books[index].title),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              BookDetailScreen.routeName,
+                              arguments: books[index],
                             );
                           },
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  error: (error, stackTrace) => Center(
-                    child: Text('Error: $error'),
-                  ),
+                        );
+                      },
+                    ),
+                  ],
                 );
-              }),
-              Text('${aCart.length} items in cart')
-            ],
-          );
-        },
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, stackTrace) => Center(
+                child: Text('Error: $error'),
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
