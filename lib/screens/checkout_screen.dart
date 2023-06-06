@@ -26,6 +26,8 @@ class CheckoutScreen extends ConsumerWidget {
               },
             ),
           ),
+          Text(
+              "total: ${aCart.fold(0.0, (previousValue, element) => previousValue + element.price)} \$"),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(

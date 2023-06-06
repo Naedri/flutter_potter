@@ -16,27 +16,30 @@ class BookDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: appBar(book.title),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Image.network(book.cover, height: 100, width: 100),
-            const SizedBox(height: 10),
-            Text('Price: \$${book.price.toStringAsFixed(2)}'),
-            const SizedBox(height: 10),
-            Text(book.synopsis),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(cartProvider.notifier).add(book);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Book added to cart'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              },
-              child: const Text('Add to Cart'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Image.network(book.cover, height: 100, width: 100),
+              const SizedBox(height: 10),
+              Text('Price: \$${book.price.toStringAsFixed(2)}'),
+              const SizedBox(height: 10),
+              Text(book.synopsis),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(cartProvider.notifier).add(book);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Book added to cart'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+                child: const Text('Add to Cart'),
+              ),
+            ],
+          ),
         ),
       ),
     );

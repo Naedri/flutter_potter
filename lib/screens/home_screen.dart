@@ -38,27 +38,27 @@ class HomeScreen extends ConsumerWidget {
           Builder(builder: (context) {
             return booksAsyncValue.when(
               data: (books) {
-                return Column(
-                  children: [
-                    ListView.builder(
-                      itemCount: books.length,
-                      padding: const EdgeInsets.all(10),
-                      shrinkWrap: true,
-                      itemBuilder: (ctx, index) {
-                        return ListTile(
-                          leading: Image.network(books[index].cover),
-                          title: Text(books[index].title),
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              BookDetailScreen.routeName,
-                              arguments: books[index],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ],
+                return Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(10),
+                    itemCount: books.length,
+                    itemBuilder: (ctx, index) {
+                      return ListTile(
+                        leading: Image.network(books[index].cover, scale: 2,),
+                        title: Text(books[index].title),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            BookDetailScreen.routeName,
+                            arguments: books[index],
+                          );
+                        },
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 10);
+                    },
+                  ),
                 );
               },
               loading: () => const Center(
