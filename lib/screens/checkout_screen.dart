@@ -141,7 +141,7 @@ class CheckoutViewState extends ConsumerState<CheckoutScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: aCart.isNotEmpty && !_isCheckingOut
+              onPressed: aCart.isNotEmpty && !_isCheckingOut && commercialOffers.hasValue
                   ? () {
                       // Start the checkout animation
                       setState(() {
