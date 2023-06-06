@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:henri_pottier_flutter/models/book.dart';
+import 'package:henri_pottier_flutter/models/provider.dart';
+import 'package:henri_pottier_flutter/screens/appbar.dart';
 import 'package:henri_pottier_flutter/screens/book_detail_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,37 +32,49 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Book Shopping App'),
-      ),
+      appBar: appBar("Henri pottier"),
       body: Consumer(
         builder: (context, widgetRef, _) {
           final booksAsyncValue = widgetRef.watch(booksProvider);
-          return booksAsyncValue.when(
-            data: (books) {
-              return ListView.builder(
-                itemCount: books.length,
-                itemBuilder: (ctx, index) {
-                  return ListTile(
-                    leading: Image.network(books[index].cover),
-                    title: Text(books[index].title),
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        BookDetailScreen.routeName,
-                        arguments: books[index],
-                      );
-                    },
-                  );
-                },
-              );
-            },
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            error: (error, stackTrace) => Center(
-              child: Text('Error: $error'),
-            ),
+          final aCart = widgetRef.watch(cartProvider);
+          return Column(
+            children: [
+              Builder(builder: (context) {
+                return booksAsyncValue.when(
+                  data: (books) {
+                    return Column(
+                      children: [
+                        ListView.builder(
+                          itemCount: books.length,
+                          padding: const EdgeInsets.all(10),
+                          shrinkWrap: true,
+                          itemBuilder: (ctx, index) {
+                            return ListTile(
+                              leading: Image.network(books[index].cover),
+                              title: Text(books[index].title),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  BookDetailScreen.routeName,
+                                  arguments: books[index],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  error: (error, stackTrace) => Center(
+                    child: Text('Error: $error'),
+                  ),
+                );
+              }),
+              Text('${aCart.length} items in cart')
+            ],
           );
         },
       ),
