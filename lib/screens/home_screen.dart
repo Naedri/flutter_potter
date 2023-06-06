@@ -18,8 +18,9 @@ final booksProvider = FutureProvider<List<Book>>((ref) async {
     var synopsis = item["synopsis"] as List<dynamic>;
     var cover = item["cover"];
     var title = item["title"];
-    fetchedBooks.add(
-        Book(title, synopsis.first, cover, double.parse(price.toString())));
+    var isbn = item["isbn"];
+    fetchedBooks.add(Book(
+        title, synopsis.first, cover, double.parse(price.toString()), isbn));
   }
 
   return fetchedBooks;
