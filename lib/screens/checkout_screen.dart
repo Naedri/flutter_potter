@@ -49,14 +49,14 @@ class CheckoutViewState extends ConsumerState<CheckoutScreen> {
                     "${book.title} ${mapCount[book]! > 1 ? " (${mapCount[book]})" : ""}",
                   ),
                   subtitle: Text(
-                    "${(book.price * mapCount[book]!).toString()} \$",
+                    "${(book.price * mapCount[book]!).toStringAsFixed(2)} \$",
                   ),
                 );
               },
             ),
           ),
           Text(
-            "total: ${aCart.fold(0.0, (previousValue, element) => previousValue + element.price)} \$",
+            "total: ${aCart.fold(0.0, (previousValue, element) => previousValue + element.price).toStringAsFixed(2)} \$",
           ),
           _isCheckingOut
               ? const CircularProgressIndicator()
