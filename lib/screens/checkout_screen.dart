@@ -3,11 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:henri_pottier_flutter/models/book.dart';
 import 'package:henri_pottier_flutter/models/provider.dart';
 
-class CheckoutScreen extends ConsumerWidget {
-  const CheckoutScreen({super.key});
+class CheckoutScreen extends ConsumerStatefulWidget {
+  const CheckoutScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  CheckoutViewState createState() => CheckoutViewState();
+}
+
+class CheckoutViewState extends ConsumerState<CheckoutScreen> {
+  bool _isCheckingOut = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(cartProvider);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final aCart = ref.watch(cartProvider);
     final mapCount = <Book, int>{};
     for (var book in aCart) {
@@ -18,11 +31,13 @@ class CheckoutScreen extends ConsumerWidget {
       }
     }
     var bookStacked = mapCount.keys.toList();
+
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Checkout'),
-        ),
-        body: Column(children: [
+      appBar: AppBar(
+        title: const Text('Checkout'),
+      ),
+      body: Column(
+        children: [
           Expanded(
             child: ListView.builder(
               itemCount: bookStacked.length,
@@ -31,34 +46,52 @@ class CheckoutScreen extends ConsumerWidget {
                 return ListTile(
                   leading: Image.network(book.cover),
                   title: Text(
-                      "${book.title} ${mapCount[book]! > 1 ? " (${mapCount[book]})" : ""}"),
-                  subtitle:
-                      Text("${(book.price * mapCount[book]!).toString()} \$"),
+                    "${book.title} ${mapCount[book]! > 1 ? " (${mapCount[book]})" : ""}",
+                  ),
+                  subtitle: Text(
+                    "${(book.price * mapCount[book]!).toString()} \$",
+                  ),
                 );
               },
             ),
           ),
           Text(
-              "total: ${aCart.fold(0.0, (previousValue, element) => previousValue + element.price)} \$"),
+            "total: ${aCart.fold(0.0, (previousValue, element) => previousValue + element.price)} \$",
+          ),
+          _isCheckingOut
+              ? const CircularProgressIndicator()
+              : const SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: aCart.isNotEmpty
+              onPressed: aCart.isNotEmpty && !_isCheckingOut
                   ? () {
-                      // Clear the cart after successful checkout
-                      ref.read(cartProvider.notifier).clearCart();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('successful checkout'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                      Navigator.pushNamed(context, '/');
+                      // Start the checkout animation
+                      setState(() {
+                        _isCheckingOut = true;
+                      });
+                      Future.delayed(const Duration(seconds: 2), () {
+                        // Stop the checkout animation after a delay (simulate a real purchase)
+                        setState(() {
+                          _isCheckingOut = false;
+                        });
+                        ref.read(cartProvider.notifier).clearCart();
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Successful checkout'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                        Navigator.pushReplacementNamed(context, '/');
+                      });
                     }
                   : null,
               child: const Text('Checkout'),
             ),
-          )
-        ]));
+          ),
+        ],
+      ),
+    );
   }
 }
