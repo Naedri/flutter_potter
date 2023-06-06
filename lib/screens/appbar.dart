@@ -22,6 +22,7 @@ class CartCount extends ConsumerWidget {
       child: IconButton(
           icon: const Icon(Icons.shopping_cart),
           onPressed: () {
+            ScaffoldMessenger.of(context).clearSnackBars();
             Navigator.push(
               context,
               MaterialPageRoute(

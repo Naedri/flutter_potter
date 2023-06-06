@@ -29,6 +29,7 @@ class BookDetailScreen extends ConsumerWidget {
               ElevatedButton(
                 onPressed: () {
                   ref.read(cartProvider.notifier).add(book);
+                  ScaffoldMessenger.of(context).clearSnackBars();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Book added to cart'),
