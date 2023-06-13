@@ -119,6 +119,12 @@ class CheckoutViewState extends ConsumerState<CheckoutScreen> {
                   subtitle: Text(
                     "${(book.price * mapCount[book]!).toStringAsFixed(2)} \$",
                   ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      ref.read(cartProvider.notifier).remove(book);
+                    },
+                  ),
                 );
               },
             ),

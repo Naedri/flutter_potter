@@ -11,6 +11,10 @@ class CartNotifier extends StateNotifier<List<Book>> {
   void clearCart() {
     state = [];
   }
+
+  void remove(Book book) {
+    state = List.from(state)..remove(book);
+  }
 }
 
 StateNotifierProvider<CartNotifier, List<Book>> cartProvider =
