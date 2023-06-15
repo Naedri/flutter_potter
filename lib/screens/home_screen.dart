@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:henri_pottier_flutter/models/book.dart';
 import 'package:henri_pottier_flutter/screens/appbar.dart';
 import 'package:henri_pottier_flutter/screens/book_detail_screen.dart';
+import 'package:henri_pottier_flutter/models/provider.dart';
 import 'package:http/http.dart' as http;
 
 final booksProvider = FutureProvider<List<Book>>((ref) async {
@@ -44,9 +45,22 @@ class HomeScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(10),
                     itemCount: books.length,
                     itemBuilder: (ctx, index) {
+                      final book = books[index];
                       return ListTile(
-                        leading: Image.network(books[index].cover),
-                        title: Text(books[index].title),
+                        leading: Image.network(book.cover),
+                        title: Text(book.title),
+                        trailing: IconButton(
+                          icon: Icon(Icons.add_shopping_cart),
+                          onPressed: () {
+                            ref.read(cartProvider.notifier).add(book);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Livre ajouté au panier'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        ),
                         onTap: () {
                           Navigator.pushNamed(
                             context,
