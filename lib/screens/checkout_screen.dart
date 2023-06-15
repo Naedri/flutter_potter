@@ -1,17 +1,19 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:henri_pottier_flutter/models/book.dart';
+import 'package:henri_pottier_flutter/models/offer.dart';
 import 'package:henri_pottier_flutter/models/provider.dart';
-import 'package:http/http.dart' as http;
+
+import '../resources/api_provider.dart';
 
 part 'checkout_screen.freezed.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  final ApiProvider provider;
+
+  const CheckoutScreen(this.provider, {Key? key}) : super(key: key);
 
   @override
   CheckoutViewState createState() => CheckoutViewState();
@@ -25,53 +27,50 @@ abstract class MyParameter with _$MyParameter {
   }) = _MyParameter;
 }
 
-final commercialOfferProvider =
-    FutureProvider.family<double, MyParameter>((ref, myParameter) async {
-  final response = await http.get(
-    Uri.parse(
-        'https://henri-potier.techx.fr/books/${myParameter.isbnList.join(",")}/commercialOffers'),
-  );
-  final jsonData = json.decode(response.body);
-
-  List<dynamic> offers = jsonData['offers'];
-  double totalPrice = myParameter.totalPrice;
-  double bestPrice = totalPrice;
-  String bestType = "";
-  for (var offer in offers) {
-    if (offer['type'] == 'percentage') {
-      double percentage = offer['value'] / 100;
-      double discount = totalPrice * percentage;
-      double priceAfterDiscount = totalPrice - discount;
-      if (priceAfterDiscount < bestPrice) {
-        bestPrice = priceAfterDiscount;
-        bestType = offer['type'];
-      }
-    } else if (offer['type'] == 'minus') {
-      int value = offer['value'];
-      double priceAfterDiscount = totalPrice - value;
-      if (priceAfterDiscount < bestPrice) {
-        bestPrice = priceAfterDiscount;
-        bestType = offer['type'];
-      }
-    } else if (offer['type'] == 'slice') {
-      int sliceValue = offer['sliceValue'];
-      int value = offer['value'];
-      int sliceDiscount = (totalPrice ~/ sliceValue) * value;
-      double priceAfterDiscount = totalPrice - sliceDiscount;
-      if (priceAfterDiscount < bestPrice) {
-        bestPrice = priceAfterDiscount;
-        bestType = offer['type'];
-      }
-    }
-  }
-  if (kDebugMode) {
-    print("best offer type is $bestType");
-  }
-  return bestPrice;
-});
-
 class CheckoutViewState extends ConsumerState<CheckoutScreen> {
   bool _isCheckingOut = false;
+
+  CheckoutViewState();
+
+  late final commercialOfferProvider =
+      FutureProvider.family<double, MyParameter>((ref, myParameter) async {
+    List<Offer> offers =
+        await widget.provider.fetchOffers(myParameter.isbnList);
+    double totalPrice = myParameter.totalPrice;
+    double bestPrice = totalPrice;
+    String bestType = "";
+    for (var offer in offers) {
+      if (offer.type == 'percentage') {
+        double percentage = offer.value / 100;
+        double discount = totalPrice * percentage;
+        double priceAfterDiscount = totalPrice - discount;
+        if (priceAfterDiscount < bestPrice) {
+          bestPrice = priceAfterDiscount;
+          bestType = offer.type;
+        }
+      } else if (offer.type == 'minus') {
+        int value = offer.value;
+        double priceAfterDiscount = totalPrice - value;
+        if (priceAfterDiscount < bestPrice) {
+          bestPrice = priceAfterDiscount;
+          bestType = offer.type;
+        }
+      } else if (offer.type == 'slice') {
+        int sliceValue = offer.sliceValue;
+        int value = offer.value;
+        int sliceDiscount = (totalPrice ~/ sliceValue) * value;
+        double priceAfterDiscount = totalPrice - sliceDiscount;
+        if (priceAfterDiscount < bestPrice) {
+          bestPrice = priceAfterDiscount;
+          bestType = offer.type;
+        }
+      }
+    }
+    if (kDebugMode) {
+      print("best offer type is $bestType");
+    }
+    return bestPrice;
+  });
 
   @override
   void initState() {
@@ -141,7 +140,9 @@ class CheckoutViewState extends ConsumerState<CheckoutScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
-              onPressed: aCart.isNotEmpty && !_isCheckingOut && commercialOffers.hasValue
+              onPressed: aCart.isNotEmpty &&
+                      !_isCheckingOut &&
+                      commercialOffers.hasValue
                   ? () {
                       // Start the checkout animation
                       setState(() {

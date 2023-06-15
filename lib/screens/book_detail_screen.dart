@@ -5,16 +5,19 @@ import 'package:henri_pottier_flutter/models/book.dart';
 import 'package:henri_pottier_flutter/models/provider.dart';
 import 'package:henri_pottier_flutter/screens/appbar.dart';
 
+import '../resources/api_provider.dart';
+
 class BookDetailScreen extends ConsumerWidget {
   static const routeName = '/book-detail';
+  final ApiProvider provider;
 
-  const BookDetailScreen({super.key});
+  const BookDetailScreen(this.provider, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final book = ModalRoute.of(context)?.settings.arguments as Book;
     return Scaffold(
-      appBar: appBar(book.title),
+      appBar: appBar(book.title, provider),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),

@@ -2,10 +2,13 @@ import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:henri_pottier_flutter/models/provider.dart';
+import 'package:henri_pottier_flutter/resources/api_provider.dart';
 import 'package:henri_pottier_flutter/screens/checkout_screen.dart';
 
 class CartCount extends ConsumerWidget {
-  const CartCount({Key? key}) : super(key: key);
+  final ApiProvider provider;
+
+  const CartCount(this.provider, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +29,7 @@ class CartCount extends ConsumerWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const CheckoutScreen(),
+                builder: (context) => CheckoutScreen(provider),
               ),
             );
           }),
@@ -34,11 +37,9 @@ class CartCount extends ConsumerWidget {
   }
 }
 
-PreferredSizeWidget appBar(String title) {
+PreferredSizeWidget appBar(String title, ApiProvider provider) {
   return AppBar(
     title: Text(title),
-    actions: const [
-      CartCount(),
-    ],
+    actions: [CartCount(provider)],
   );
 }

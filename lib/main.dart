@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:henri_pottier_flutter/resources/api_provider.dart';
 import 'package:henri_pottier_flutter/screens/book_detail_screen.dart';
+import 'package:http/http.dart' as http;
 
 import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp(ApiProvider(http.Client())));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ApiProvider provider;
+
+  const MyApp(this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +25,8 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => const HomeScreen(),
-          BookDetailScreen.routeName: (context) => const BookDetailScreen(),
+          '/': (context) => HomeScreen(provider),
+          BookDetailScreen.routeName: (context) => BookDetailScreen(provider),
         },
       ),
     );

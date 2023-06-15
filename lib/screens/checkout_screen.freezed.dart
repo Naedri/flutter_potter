@@ -102,7 +102,7 @@ class __$$_MyParameterCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_MyParameter implements _MyParameter {
+class _$_MyParameter with DiagnosticableTreeMixin implements _MyParameter {
   _$_MyParameter(
       {required final List<String> isbnList, required this.totalPrice})
       : _isbnList = isbnList;
@@ -119,8 +119,17 @@ class _$_MyParameter implements _MyParameter {
   final double totalPrice;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MyParameter(isbnList: $isbnList, totalPrice: $totalPrice)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MyParameter'))
+      ..add(DiagnosticsProperty('isbnList', isbnList))
+      ..add(DiagnosticsProperty('totalPrice', totalPrice));
   }
 
   @override
